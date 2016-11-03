@@ -20,3 +20,7 @@
 
 - explore: view_definitions
   from: pg_views
+  
+- explore: redshift_table_schemas
+
+- explore: redshift_query_alerts

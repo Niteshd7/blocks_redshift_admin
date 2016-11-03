@@ -291,3 +291,146 @@
         {% elsif value >= 48 %}
         <div style="color:#868A08; background-color:#C64646; font-size:100%; text-align:center">{{ rendered_value }}</div>        
         {% endif %}
+
+
+- view: redshift_query_alerts
+  derived_table:
+    sql: |
+      select 
+             trim(s.perm_table_name)  as table, 
+             (sum(abs(datediff(seconds, 
+                       coalesce(b.starttime, d.starttime, s.starttime), 
+                       case 
+                         when 
+                       coalesce(b.endtime, d.endtime, s.endtime) > 
+                       coalesce(b.starttime, d.starttime, s.starttime) then 
+                       coalesce(b.endtime, d.endtime, s.endtime) 
+                       else coalesce(b.starttime, d.starttime, s.starttime) 
+                       end))) / 60 ) :: numeric(24, 0) as minutes, 
+             sum(coalesce(b.rows, d.rows, s.rows))     as rows, 
+             trim(split_part(l.event, ':', 1))         as event, 
+             substring(trim(l.solution), 1, 60)        as solution, 
+             max(l.query)                              as sample_query, 
+             count(distinct l.query) 
+      from   stl_alert_event_log as l 
+             left join stl_scan as s 
+                    on s.query = l.query 
+                       and s.slice = l.slice 
+                       and s.segment = l.segment 
+             left join stl_dist as d 
+                    on d.query = l.query 
+                       and d.slice = l.slice 
+                       and d.segment = l.segment 
+             left join stl_bcast as b 
+                    on b.query = l.query 
+                       and b.slice = l.slice 
+                       and b.segment = l.segment 
+      where  l.userid > 1 
+             and l.event_time >= dateadd(day, -7, current_date) 
+      group  by 1, 
+                4, 
+                5 
+      order  by 2 desc, 
+                6 desc
+  fields:
+  - dimension: table
+    type: string
+    sql: ${TABLE}."table"
+
+  - dimension: minutes
+    type: number
+    sql: ${TABLE}.minutes
+
+  - dimension: rows
+    type: number
+    sql: ${TABLE}.rows
+
+  - dimension: event
+    type: string
+    sql: ${TABLE}.event
+
+  - dimension: solution
+    type: string
+    sql: ${TABLE}.solution
+
+  - dimension: sample_query
+    type: number
+    sql: ${TABLE}.sample_query
+
+  - dimension: count
+    type: number
+    sql: ${TABLE}.count
+
+  sets:
+    detail:
+      - table
+      - minutes
+      - rows
+      - event
+      - solution
+      - sample_query
+      - count
+      
+- view: redshift_table_schemas
+  derived_table:
+    sql: |
+      select * from pg_table_def
+  fields:
+  - measure: count
+    type: count
+    drill_fields: detail*
+
+  - dimension: schemaname
+    sql: ${TABLE}.schemaname
+
+  - dimension: tablename
+    sql: ${TABLE}.tablename
+
+  - dimension: column
+    sql: ${TABLE}.column
+
+  - dimension: type
+    sql: ${TABLE}.type
+
+  - dimension: encoding
+    sql: ${TABLE}.encoding
+
+  - dimension: distkey
+    sql: ${TABLE}.distkey
+
+  - dimension: sortkey
+    type: number
+    sql: ${TABLE}.sortkey
+
+  - dimension: notnull
+    sql: ${TABLE}.notnull
+    
+  - dimension: notnull_text
+    sql: case WHEN ${TABLE}.notnull then 'not null' else 'null' end
+    
+  - dimension: distkey_text
+    sql: case WHEN ${TABLE}.distkey then 'distkey(' || ${TABLE}.column || ')'  else NULL end
+    
+  - dimension: sortkey_text
+    sql: case WHEN ${TABLE}.distkey then 'distkey(' || ${TABLE}.column || ')'  else NULL end
+
+  - dimension: type_text
+    sql: |
+      REPLACE(
+        REPLACE(
+            REPLACE(${TABLE}.type, 'character varying', 'varchar'), 
+              'timestamp without time zone', 'timestamp'
+        ),
+        'numeric', 'decimal'
+      )
+      
+  sets:
+    detail:
+      - schemaname
+      - tablename
+      - column
+      - type
+      - encoding
+      - distkey
+      - sortkey
+      - notnull
