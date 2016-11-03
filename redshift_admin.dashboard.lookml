@@ -10,7 +10,7 @@
   - name: table_load_summary
     title: 'Table Load Summary'
     type: table
-    model: YOUR_MODEL_NAME
+    model: redshift_admin
     explore: data_loads
     dimensions: [data_loads.root_bucket, data_loads.s3_path_clean, data_loads.file_stem]
     measures: [data_loads.hours_since_last_load]
@@ -24,7 +24,7 @@
   - name: recent_files_loaded
     title: 'Recent Files Loaded'
     type: table
-    model: YOUR_MODEL_NAME
+    model: redshift_admin
     explore: data_loads
     dimensions: [data_loads.file_name]
     measures: [data_loads.hours_since_last_load]
@@ -40,7 +40,7 @@
   - name: recent_load_errors
     title: 'Recent Load Errors'
     type: table
-    model: YOUR_MODEL_NAME
+    model: redshift_admin
     explore: etl_errors
     dimensions: [etl_errors.error_date, etl_errors.file_name, etl_errors.column_name,
       etl_errors.column_data_type, etl_errors.error_reason]
@@ -55,7 +55,7 @@
   - name: database_consumption
     title: 'Database Consumption'
     type: table
-    model: YOUR_MODEL_NAME
+    model: redshift_admin
     explore: db_space
     dimensions: [db_space.schema, db_space.table_stem]
     measures: [db_space.total_rows, db_space.total_megabytes, db_space.total_tables]
@@ -69,7 +69,7 @@
   - name: table_architecture
     title: 'Table Architecture (Distribution, Sort, and Skew)'
     type: table
-    model: YOUR_MODEL_NAME
+    model: redshift_admin
     explore: table_skew
     dimensions: [table_skew.schema, table_skew.table, table_skew.encoded, table_skew.rows_in_table,
       table_skew.size, table_skew.sortkey, table_skew.distribution_style, table_skew.skew_rows]
