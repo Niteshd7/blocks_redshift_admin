@@ -34,9 +34,9 @@
     show_view_names: true
     show_row_numbers: true
     width: 12
-    height: 4    
+    height: 4
     limit: 500
-    
+
   - name: recent_load_errors
     title: 'Recent Load Errors'
     type: table
@@ -49,9 +49,9 @@
     sorts: [etl_errors.error_date desc]
     show_view_names: true
     width: 12
-    height: 4    
+    height: 4
     limit: 500
-    
+
   - name: database_consumption
     title: 'Database Consumption'
     type: table
@@ -63,7 +63,7 @@
     show_view_names: true
     show_row_numbers: true
     width: 12
-    height: 4    
+    height: 4
     limit: 500
 
   - name: table_architecture
@@ -79,32 +79,31 @@
     show_view_names: true
     show_row_numbers: true
     width: 12
-    height: 4    
+    height: 4
     limit: 500
-    
+
   - name: redshift_query_alerts
     title: 'Redshift Query ALerts'
     type: table
     model: redshift_admin
     explore: redshift_query_alerts
-    dimensions: [redshift_query_alerts.table, redshift_query_alerts.minutes, redshift_query_alerts.rows, redshift_query_alerts.event, 
+    dimensions: [redshift_query_alerts.table, redshift_query_alerts.minutes, redshift_query_alerts.rows, redshift_query_alerts.event,
     redshift_query_alerts.solution, redshift_query_alerts.sample_query, redshift_query_alerts.count]
     sorts: [redshift_query_alerts.table]
     show_view_names: true
     width: 12
-    height: 4    
+    height: 4
     limit: 500
-    
+
   - name: redshift_table_schemas
     title: 'Redshift Table Schemas'
     type: table
     model: redshift_admin
     explore: redshift_table_schemas
-    dimensions: [redshift_table_schemas.tablename, redshift_table_schemas.schemaname, redshift_table_schemas.column, redshift_table_schemas.type, 
+    dimensions: [redshift_table_schemas.tablename, redshift_table_schemas.schemaname, redshift_table_schemas.column, redshift_table_schemas.type,
     redshift_table_schemas.encoding, redshift_table_schemas.type_text]
     sorts: [redshift_table_schemas.tablename]
     show_view_names: true
     width: 12
-    height: 4    
+    height: 4
     limit: 500
-
