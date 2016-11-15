@@ -125,11 +125,11 @@ view: table_skew {
     type: number
     sql: ${TABLE}.skew_rows ;;
     html: {% if value < 25 %}
-      <div style="color:#B40404; background-color:#22CE7E; font-size:100%; text-align:center">{{ rendered_value }}</div>
+      <div style="color:Black; background-color:#22CE7E; font-size:100%; text-align:center">{{ rendered_value }}</div>
       {% elsif value >= 25 and value < 50 %}
-      <div style="color:#868A08; background-color:#95F047; font-size:100%; text-align:center">{{ rendered_value }}</div>
+      <div style="color:Black; background-color:#95F047; font-size:100%; text-align:center">{{ rendered_value }}</div>
       {% elsif value >= 50 %}
-      <div style="color:#868A08; background-color:#C64646; font-size:100%; text-align:center">{{ rendered_value }}</div>
+      <div style="color:Black; background-color:#C64646; font-size:100%; text-align:center">{{ rendered_value }}</div>
       {% endif %}
       ;;
   }
@@ -326,11 +326,11 @@ view: data_loads {
     value_format_name: id
     sql: datediff('hour', ${most_recent_load}, getdate()) ;;
     html: {% if value < 24 %}
-      <div style="color:#B40404; background-color:#22CE7E; font-size:100%; text-align:center">{{ rendered_value }}</div>
+      <div style="color:Black; background-color:#22CE7E; font-size:100%; text-align:center">{{ rendered_value }}</div>
       {% elsif value >= 24 and value < 48 %}
-      <div style="color:#868A08; background-color:#95F047; font-size:100%; text-align:center">{{ rendered_value }}</div>
+      <div style="color:Black; background-color:#95F047; font-size:100%; text-align:center">{{ rendered_value }}</div>
       {% elsif value >= 48 %}
-      <div style="color:#868A08; background-color:#C64646; font-size:100%; text-align:center">{{ rendered_value }}</div>
+      <div style="color:Black; background-color:#C64646; font-size:100%; text-align:center">{{ rendered_value }}</div>
       {% endif %}
       ;;
   }
