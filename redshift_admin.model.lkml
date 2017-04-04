@@ -30,3 +30,5 @@ explore: view_definitions {
 explore: redshift_table_schemas {}
 
 explore: redshift_query_alerts {}
+
+explore: top_queries {}

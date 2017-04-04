@@ -417,6 +417,77 @@ order  by 2 desc,
   }
 }
 
+view: top_queries {
+  derived_table: {
+    sql: select trim(database) as DB, count(query) as n_qry, max(qrytext) as qrytext, min(run_seconds) as "min" ,
+          max(run_seconds) as "max", avg(run_seconds) as "avg", max(query) as max_query_id,
+          max(starttime) as last_run, aborted, event
+          from (
+          select userid, label, stl_query.query, trim(database) as database, trim(querytxt) as qrytext, md5(trim(querytxt)) as qry_md5, starttime, endtime, datediff(seconds, starttime,endtime)::numeric(12,2) as run_seconds,
+                 aborted, decode(alrt.event,'Very selective query filter','Filter','Scanned a large number of deleted rows','Deleted','Nested Loop Join in the query plan','Nested Loop','Distributed a large number of rows across the network','Distributed','Broadcasted a large number of rows across the network','Broadcast','Missing query planner statistics','Stats',alrt.event) as event
+          from stl_query
+          left outer join ( select query, trim(split_part(event,':',1)) as event from STL_ALERT_EVENT_LOG where event_time >=  dateadd(day, -5, current_Date)  group by query, trim(split_part(event,':',1)) ) as alrt on alrt.query = stl_query.query
+          where userid <> 1
+          and starttime >=  dateadd(day, -5, current_Date)
+           )
+          where qrytext ilike 'select%'
+          group by database, label, qry_md5, aborted, event
+      ;;
+  }
+
+  dimension: database {
+    sql: ${TABLE}.DB ;;
+  }
+
+  dimension: query_count {
+    type: number
+    sql: ${TABLE}.n_qry ;;
+  }
+
+  dimension: query_text {
+    sql: ${TABLE}.qrytext ;;
+  }
+
+  dimension: query_text_short {
+    sql: LEFT(${query_text}, 80) ;;
+  }
+
+  dimension: min_seconds {
+    type: number
+    sql: ${TABLE}.min ;;
+  }
+
+  dimension: max_seconds {
+    type: number
+    sql: ${TABLE}.max ;;
+  }
+
+  dimension: avg_seconds {
+    type: number
+    sql: ${TABLE}.avg ;;
+  }
+
+  dimension: max_query_id {
+    type: number
+    sql: ${TABLE}.max_query_id ;;
+  }
+
+  dimension: last_run {
+    type: date_time
+    sql: ${TABLE}.last_run ;;
+    convert_tz: yes
+  }
+
+  dimension: aborted {
+    type: number
+    sql: ${TABLE}.aborted ;;
+  }
+
+  dimension: event {
+    sql: ${TABLE}.event ;;
+  }
+}
+
 view: redshift_table_schemas {
   derived_table: {
     sql: select * from pg_table_def
