@@ -1,7 +1,7 @@
 # preliminaries #
 
 # make sure this is a connection where the database user has access to pg_admin tables
-connection: "redshift-production"
+connection: "analytics-production"
 
 case_sensitive: no
 
